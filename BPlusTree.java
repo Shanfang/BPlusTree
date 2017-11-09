@@ -42,86 +42,21 @@ public class BPlusTree {
     }
 
 
-    // initialize tree with the order from input file
-    private static void InitializeTree(BufferedReader input) {
-        try {
-            int order = Integer.parseInt(input.readLine().trim());
-            //System.out.println("Order of the tree is " + order);
-            new BPlusTree(order);
-            //System.out.println("B+ tree is initialized");
-        } catch (Exception e) {
-            System.err.println("The specified tree order is invalid, use default value 3");
-            new BPlusTree(3);
-        }
-    }
+//    // initialize tree with the order from input file
+//    private static BPlusTree InitializeTree(BufferedReader input) {
+//        BPlusTree tree;
+//        try {
+//            int order = Integer.parseInt(input.readLine().trim());
+//            //System.out.println("Order of the tree is " + order);
+//            tree = new BPlusTree(order);
+//            //System.out.println("B+ tree is initialized");
+//        } catch (Exception e) {
+//            System.err.println("The specified tree order is invalid, use default value 3");
+//            tree = new BPlusTree(3);
+//        }
+//        return tree;
+//    }
 
-
-    // get the type of operation to be executed on the B plus tree
-    private static int getOperationType(String operation) {
-        if (operation.contains("Insert")) {
-            return 1;
-        } else if (operation.contains("Search") && operation.contains(",")){
-            return 2;
-        } else {
-            return 3;
-        }
-    }
-
-    private static double parseInsertKey(String line) {
-        String keyStr = line.substring(line.indexOf('(') + 1, line.indexOf(',')).trim();
-        return Double.parseDouble(keyStr);
-    }
-
-    private static String parseInsertValue(String line) {
-        return line.substring(line.indexOf("Value") + 5, line.indexOf(')')).trim();
-    }
-
-    public static void main(String[] args) throws IOException {
-        // check if the input argument is valid
-        if (args.length != 0) {
-            System.err.println("Invalid input, please enter:java treesearch file_name");
-        } else {
-            // get the input file name
-            Scanner scanner = new Scanner(System.in);
-            String inputFile = scanner.nextLine();
-            System.out.println("Start reading from:" + inputFile);
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-            try {
-                input = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile + ".txt")));
-
-            } catch (FileNotFoundException e) {
-                System.err.println("The specified input file is not found");
-            }
-
-            // get the order of the B plus tree
-            InitializeTree(input);
-
-            // execute the operations from input file and
-            BufferedWriter outputFile = new BufferedWriter(new FileWriter(new File("out_put.txt")));
-            do {
-                String newLine = input.readLine().trim();
-                switch(getOperationType(newLine)) {
-                    case 1: // insert operation
-                        double insertionKey = parseInsertKey(newLine);
-                        String insertionValue = parseInsertValue(newLine);
-                        insertion(insertionKey, insertionValue);
-                        break;
-                    case 2: // search by key range operation
-                        double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
-                        double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
-                        searchRange(low, high);
-                        break;
-                    case 3: // search by key operation
-                        double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
-                        searchValue(searchingKey);
-                    break;
-                }
-                //System.out.println("operations performed: " + newLine);
-            } while (input.ready());
-        }
-
-    }
 
 
 
@@ -130,7 +65,7 @@ public class BPlusTree {
       if sub-procedure returns null, then there is no overflow and child splitting
       if sub-procedure returns non-null, a new index node should be created
      */
-    public static void insertion(Double key, String value) {
+    public void insertion(Double key, String value) {
         LeafNode newLeaf = new LeafNode(key, value);
         Entry<Double, Node> entry = new AbstractMap.SimpleEntry<Double, Node>(key, newLeaf);
 
@@ -154,7 +89,7 @@ public class BPlusTree {
         }
     }
 
-    private static Entry<Double, Node> insertionHelper(Node node, Entry<Double, Node> entry) {
+    private Entry<Double, Node> insertionHelper(Node node, Entry<Double, Node> entry) {
 //    private static Entry<Double, Node> insertionHelper(Node node, Entry<Double, Node> entry,
 //            Entry<Double, Node> newChildEntry) {
         Entry<Double, Node> newChildEntry = null;
