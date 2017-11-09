@@ -56,6 +56,15 @@ public class BPlusTree<K extends Comparable<K>, T> {
         }
     }
 
+ 
+    private static double parseInsertKey(String line) {
+        String keyStr = line.substring(line.indexOf('(') + 1, line.indexOf(',')).trim();
+        return Double.parseDouble(keyStr);
+    }
+
+    private static String parseInsertValue(String line) {
+        return line.substring(line.indexOf("Value") + 5, line.indexOf(')')).trim();
+    }
     public static void main(String[] args) throws IOException {
         // check if the input argument is valid
         if (args.length != 0) {
@@ -81,18 +90,23 @@ public class BPlusTree<K extends Comparable<K>, T> {
             BufferedWriter outputFile = new BufferedWriter(new FileWriter(new File("out_put.txt")));
             do {
                 String newLine = input.readLine().trim();
-                switch(getOperation(newLine)) {
+                switch(getOperationType(newLine)) {
                     case 1: // insert operation
-                        System.out.println("Got an insert operation");
+                        double insertionKey = parseInsertKey(newLine);
+                        String insertValue = parseInsertValue(newLine);
+                        insertNode(insertionKey, insertValue);
                         break;
                     case 2: // search by key range operation
-                        System.out.println("Got a search range operation");
+                        double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
+                        double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
+                        searchRange(low, high);
                         break;
                     case 3: // search by key operation
-                        System.out.println("Got a search key operation");
-                        break;    
+                        double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
+                        searchValue(searchingKey);
+                    break;
                 }
-                System.out.println("operations performed: " + newLine);
+                //System.out.println("operations performed: " + newLine);
             } while (input.ready());
         }
 
