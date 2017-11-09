@@ -15,7 +15,7 @@ public class IndexNode extends Node {
         keys = new ArrayList<Double>(newKeys);
         children = new ArrayList<Node>(newChildren);
     }
-    
+
     // constructor for the case that the idex node becomes the root
     public IndexNode(Double key, Node leftChild, Node rightChild) {
         isLeafNode = false;
