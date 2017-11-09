@@ -2,44 +2,61 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class LeafNode<K extends Comparable<K>, T> extends Node<K, T> {
-    protected ArrayList<T> values;
-    protected LeafNode<K,T> nextSibling;
-    protected LeafNode<K,T> preSibling;
+public class LeafNode extends Node {
+//public class LeafNode {
+    // use a list of list so that each key can store multiple values
+    protected List<List<String>> values;
+    protected LeafNode nextSibling = null;
+    protected LeafNode preSibling = null;
 
-    public LeafNode(K firstKey, T firstValue) {
+    // this constructor is used to create a brand new leaf node
+    public LeafNode(Double firstKey, String firstValue) {
         isLeafNode = true;
-        keys = new ArrayList<K>();
-        values = new ArrayList<T>();
+        keys = new ArrayList<Double>();
         keys.add(firstKey);
-        values.add(firstValue);
-
+        values = new ArrayList<>();
+        List<String> bucket = new ArrayList<>();
+        bucket.add(firstValue);
+        values.add(bucket);
     }
 
-    public LeafNode(List<K> newKeys, List<T> newValues) {
+    // this constructor is used to create a leaf node to store right half when a node is split
+    public LeafNode(List<Double> newKeys, List<List<String>> newValues) {
         isLeafNode = true;
-        keys = new ArrayList<K>(newKeys);
-        values = new ArrayList<T>(newValues);
-
+        keys = new ArrayList<Double>(newKeys);
+        values = new ArrayList<>(newValues);
+        // DO REMEMBER TO CREATE A LIST for bucket, otherwise null pointer issue in insertSorted
     }
 
     /*
      insert key/value into this node so that it still remains sorted
      */
-    public void insertSorted(K key, T value) {
+    public void insertSorted(Double key, String value) {
+        List<String> bucket = new ArrayList<>();
+        bucket.add(value);
+
+        // when the inserting key is the smallest
         if (key.compareTo(keys.get(0)) < 0) {
             keys.add(0, key);
-            values.add(0, value);
+            values.add(0, bucket);
         } else if (key.compareTo(keys.get(keys.size() - 1)) > 0) {
+            //append to key list and values list
             keys.add(key);
-            values.add(value);
-        } else {
-            ListIterator<K> iterator = keys.listIterator();
+            values.add(bucket);
+        } else{
+            ListIterator<Double> iterator = keys.listIterator();
             while (iterator.hasNext()) {
+                // insert into an existing key, append value to existing bucket
+                if (iterator.next().compareTo(key) == 0) {
+                    int position = iterator.nextIndex();
+                    values.get(position).add(value);
+                    break;
+                }
+                // insert new key and new bucket
                 if (iterator.next().compareTo(key) > 0) {
-                    int position = iterator.previousIndex();
+                    int position = iterator.nextIndex();
                     keys.add(position, key);
-                    values.add(position, value);
+                    values.add(position, bucket);
                     break;
                 }
             }

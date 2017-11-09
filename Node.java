@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 
-public class Node<K extends Comparable<K>, T> {
+/*
+ node has at least ceil(m/2) children, at most m - 1 children
+ except that root is allowed to have at least 2 children
+*/
+public class Node {
     protected boolean isLeafNode;
-    protected ArrayList<K> keys;
+    protected ArrayList<Double> keys;
 
     public boolean isOverflowed() {
         return keys.size() >= BPlusTree.treeOrder();
-    }
-
-    public boolean isUnderflowed() {
-        return keys.size() < Math.ceil(BPlusTree.treeOrder() / 2);
     }
 
 }
