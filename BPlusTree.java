@@ -23,8 +23,8 @@ import java.util.List;
  */
 public class BPlusTree {
 
-    private static  Node root;
-    private static int m;
+    private  Node root;
+    private int m;
 
     public BPlusTree(int order) {
         this.m = order;
@@ -33,11 +33,11 @@ public class BPlusTree {
         this.root = null;
     }
 
-    public static int treeOrder() {
+    public int treeOrder() {
         return m;
     }
 
-    public static Node treeRoot() {
+    public Node treeRoot() {
         return root;
     }
 
@@ -166,7 +166,7 @@ public class BPlusTree {
     }
 
      // split a leaf node and return an entry consisting of splitting key and new leaf node
-    public static Entry<Double, Node> splitLeafNode(LeafNode leaf) {
+    public Entry<Double, Node> splitLeafNode(LeafNode leaf) {
         ArrayList<Double> newKeys = new ArrayList<>();
         List<List<String>> newValues = new ArrayList<>();
 
@@ -198,7 +198,7 @@ public class BPlusTree {
     }
 
     // split index node
-    public static Entry<Double, Node> splitIndexNode(IndexNode node) {
+    public Entry<Double, Node> splitIndexNode(IndexNode node) {
         ArrayList<Double> newKeys = new ArrayList<>();
         ArrayList<Node> newChildren = new ArrayList<>();
 

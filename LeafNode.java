@@ -50,13 +50,13 @@ public class LeafNode extends Node {
             while (iterator.hasNext()) {
                 // insert into an existing key, append value to existing bucket
                 if (iterator.next().compareTo(key) == 0) {
-                    int position = iterator.nextIndex();
+                    int position = iterator.previousIndex();
                     values.get(position).add(value);
                     break;
                 }
                 // insert new key and new bucket
                 if (iterator.next().compareTo(key) > 0) {
-                    int position = iterator.nextIndex();
+                    int position = iterator.previousIndex();
                     keys.add(position, key);
                     values.add(position, bucket);
                     break;

@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.util.Queue;
+import java.util.List;
+import java.util.LinkedList;
 
 public class project1 {
 
@@ -31,6 +33,32 @@ public class project1 {
         return line.substring(line.indexOf("Value") + 5, line.indexOf(')')).trim();
     }
 
+    // for debug purpose
+    private static void printTree(Node root) {
+        if (root == null) {
+            System.out.println("Hitting a null, return from here");
+            return;
+        }
+        Queue<Node> queue = new LinkedList<Node>();
+        queue.offer(root);
+        
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+
+            if (!node.isLeafNode) {
+                for (Node child : ((IndexNode)node).children) {
+                    queue.offer(child);
+                }
+            } else {
+                for (List list : ((LeafNode)node).values) {
+                    for (int i = 0; i < list.size(); i++) {
+                        System.out.println("LeafNode with value: " + list.get(i));
+                    }
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         // check if the input argument is valid
         if (args.length != 0) {
@@ -52,7 +80,7 @@ public class project1 {
             // get the order of the B plus tree
             int order = Integer.parseInt(input.readLine().trim());
             BPlusTree tree = new BPlusTree(order);
-
+            printTree(tree.treeRoot());
             // execute the operations from input file and
             BufferedWriter outputFile = new BufferedWriter(new FileWriter(new File("out_put.txt")));
             do {
@@ -64,17 +92,24 @@ public class project1 {
                         tree.insertion(insertionKey, insertionValue);
                         break;
                     case 2: // search by key range operation
-                        double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
-                        double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
+                        //double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
+                        //double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
+                        System.out.println("search by range");
+                        
                         //searchRange(low, high);
                         break;
                     case 3: // search by key operation
-                        double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
+                        //double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
+                        System.out.println("search by key");
+                        
                         //searchValue(searchingKey);
                         break;
                 }
                 System.out.println("operations performed: " + newLine);
             } while (input.ready());
+            printTree(tree.treeRoot());
+            System.out.println("Finished query and will close output file");
+            scanner.close();
             outputFile.close();
         }
     }
