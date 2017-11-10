@@ -136,6 +136,7 @@ public class BPlusTree {
                         IndexNode newRoot = new IndexNode(newChildEntry.getKey(), curr,
                                 newChildEntry.getValue());
                         root = newRoot;
+                        System.out.println("Root is index node, it is splited, tree height increase by 1");
                         return null;
                     }
                     return newChildEntry;
@@ -153,11 +154,14 @@ public class BPlusTree {
             }
             else {
                 // leaf is overflow after insertion
+                System.out.println("After insertion, size of leaf node is:" + leaf.keys.size());
                 newChildEntry = splitLeafNode(leaf);
                 if(leaf == root) {
-                    IndexNode newRoot = new IndexNode(newChildEntry.getKey(), leaf,
-                            newChildEntry.getValue());
+                    //System.out.println("New index node with key " + newChildEntry.getKey());
+                    //System.out.println("New index node with value " + ((LeafNode)newChildEntry.getValue()).values.get(0).get(0));
+                    IndexNode newRoot = new IndexNode(newChildEntry.getKey(), leaf,newChildEntry.getValue());
                     root = newRoot;
+                    System.out.println("Root is also leaf, it is splitted new root with key: " + root.keys.get(0));
                     return null;
                 }
                 return newChildEntry;
@@ -170,15 +174,15 @@ public class BPlusTree {
         ArrayList<Double> newKeys = new ArrayList<>();
         List<List<String>> newValues = new ArrayList<>();
 
-        // m/2 entries move to brand new node, leaf node has max of m + 1 children
-        for(int i = m / 2; i <= m + 1; i++) {
+        // m/2 entries move to brand new node, leaf node has max of m children
+        for(int i = m / 2; i < m - 1; i++) {
             newKeys.add(leaf.keys.get(i));
             List<String> newBucket = leaf.values.get(i);
             newValues.add(newBucket);
         }
 
         // remove the the above entries from previous node
-        for(int i = m / 2; i <= m; i++) {
+        for(int i = m / 2; i < m - 1; i++) {
             leaf.keys.remove(leaf.keys.size()-1);
             leaf.values.remove(leaf.values.size()-1);
         }
@@ -187,11 +191,18 @@ public class BPlusTree {
         LeafNode rightNode = new LeafNode(newKeys, newValues);
 
         // add the new leaf node into doubly linked list
-        LeafNode temp = leaf.nextSibling;
-        leaf.nextSibling = rightNode;
-        rightNode.nextSibling = temp;
-        temp.preSibling = rightNode;
-        rightNode.preSibling = leaf;
+
+        if (leaf.nextSibling == null) {
+            // leaf is the rightmost node
+            leaf.nextSibling = rightNode;
+            rightNode.preSibling = leaf;
+        } else {
+            LeafNode temp = leaf.nextSibling;
+            leaf.nextSibling = rightNode;
+            rightNode.nextSibling = temp;
+            temp.preSibling = rightNode;
+            rightNode.preSibling = leaf;
+        }
 
         Entry<Double, Node> newChildEntry = new AbstractMap.SimpleEntry<Double, Node>(splitKey, rightNode);
         return newChildEntry;

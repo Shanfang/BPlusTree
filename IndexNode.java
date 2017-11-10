@@ -19,6 +19,8 @@ public class IndexNode extends Node {
     // constructor for the case that the idex node becomes the root
     public IndexNode(Double key, Node leftChild, Node rightChild) {
         isLeafNode = false;
+        //System.out.println("Init an index node with key " + key);
+        keys = new ArrayList<Double>();
         keys.add(key);
         children = new ArrayList<Node>();
         children.add(leftChild);
@@ -38,7 +40,7 @@ public class IndexNode extends Node {
             children.add(child);
         } else {
             keys.add(index, key);
-            children.add(index+1, child);
+            children.add(index + 1, child);
         }
     }
 

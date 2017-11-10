@@ -48,15 +48,24 @@ public class LeafNode extends Node {
         } else{
             ListIterator<Double> iterator = keys.listIterator();
             while (iterator.hasNext()) {
+                Double compKey = iterator.next();
+                int position = iterator.previousIndex();
                 // insert into an existing key, append value to existing bucket
-                if (iterator.next().compareTo(key) == 0) {
-                    int position = iterator.previousIndex();
+                if (compKey.compareTo(key) == 0) {
+                    System.out.println("Before adding new value, values under key: " + key);
+                    for (String str : values.get(position)) {
+                        System.out.println(str);
+                    }
                     values.get(position).add(value);
+
+                    System.out.println("After adding new value, values under key: " + key);
+                    for (String str : values.get(position)) {
+                        System.out.println(str);
+                    }
                     break;
                 }
                 // insert new key and new bucket
-                if (iterator.next().compareTo(key) > 0) {
-                    int position = iterator.previousIndex();
+                if (compKey.compareTo(key) > 0) {
                     keys.add(position, key);
                     values.add(position, bucket);
                     break;

@@ -41,21 +41,42 @@ public class project1 {
         }
         Queue<Node> queue = new LinkedList<Node>();
         queue.offer(root);
-        
+        // System.out.println("Root of the tree with keys: ");
+        // for (Double key :  root.keys) {
+        //     System.out.println("\t" + key);
+        // }
+        int level = 0;
         while (!queue.isEmpty()) {
-            Node node = queue.poll();
+            level++;
+            System.out.println("At level: " + level);
+            
+            int qSize = queue.size();
+            for (int j = 0; j < qSize; j++) {
+                //System.out.println("Child at index: " + level);
+                Node node = queue.poll(); 
 
-            if (!node.isLeafNode) {
-                for (Node child : ((IndexNode)node).children) {
-                    queue.offer(child);
-                }
-            } else {
-                for (List list : ((LeafNode)node).values) {
-                    for (int i = 0; i < list.size(); i++) {
-                        System.out.println("LeafNode with value: " + list.get(i));
+                // System.out.println("Poll node off the queue, node keys: ");                
+                // for (Double key :  node.keys) {
+                //     System.out.println(key);
+                // }                         
+                if (!node.isLeafNode) {
+                    for (Node child : ((IndexNode)node).children) {
+                        //System.out.println("Pushing onto queue index node with key: " + child.keys.get(0));                        
+                        queue.offer(child);
+                    }
+                } else {
+                    LeafNode leaf = (LeafNode) node;
+                    int size = leaf.keys.size();
+                    for (int i = 0; i < size; i++) {
+                        Double keyToPrint = leaf.keys.get(i);
+                        for (String val : leaf.values.get(i)) {
+                            System.out.println("Leaf node with key: " + keyToPrint);                            
+                            System.out.println("Leaf node with value: " + val);
+                        }
                     }
                 }
             }
+ 
         }
     }
 
@@ -68,7 +89,6 @@ public class project1 {
             Scanner scanner = new Scanner(System.in);
             String inputFile = scanner.nextLine();
             System.out.println("Start reading from:" + inputFile);
-
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             try {
                 input = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile + ".txt")));
@@ -79,12 +99,15 @@ public class project1 {
 
             // get the order of the B plus tree
             int order = Integer.parseInt(input.readLine().trim());
+            
             BPlusTree tree = new BPlusTree(order);
             printTree(tree.treeRoot());
             // execute the operations from input file and
             BufferedWriter outputFile = new BufferedWriter(new FileWriter(new File("out_put.txt")));
+            
             do {
                 String newLine = input.readLine().trim();
+                //String newLine = sc.nextLine().trim();
                 switch(getOperationType(newLine)) {
                     case 1: // insert operation
                         double insertionKey = parseInsertKey(newLine);
@@ -107,6 +130,7 @@ public class project1 {
                 }
                 System.out.println("operations performed: " + newLine);
             } while (input.ready());
+            //} while (scanner.hasNext());
             printTree(tree.treeRoot());
             System.out.println("Finished query and will close output file");
             scanner.close();
