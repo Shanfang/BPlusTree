@@ -1,12 +1,3 @@
-import java.util.Scanner;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.ArrayList;
@@ -72,6 +63,7 @@ public class BPlusTree {
         // insert into an empty tree, this leaf node becomes a new root
         if(root == null || root.keys.size() == 0) {
             root = entry.getValue();
+            return;
         }
 
         // initially newChildEntry is null, and stays as null on return unless child is split
@@ -149,7 +141,7 @@ public class BPlusTree {
             leaf.insertSorted(entry.getKey(), newLeaf.values.get(0).get(0));
 
             // the case that there is extra space for newLeaf
-            if(leaf.keys.size() < m) {
+            if(leaf.keys.size() <= m) {
                 return null;
             }
             else {
@@ -169,20 +161,21 @@ public class BPlusTree {
         }
     }
 
-     // split a leaf node and return an entry consisting of splitting key and new leaf node
+    // split a leaf node and return an entry consisting of splitting key and new leaf node
     public Entry<Double, Node> splitLeafNode(LeafNode leaf) {
         ArrayList<Double> newKeys = new ArrayList<>();
         List<List<String>> newValues = new ArrayList<>();
 
         // m/2 entries move to brand new node, leaf node has max of m children
-        for(int i = m / 2; i < m - 1; i++) {
+        int start = (int)Math.ceil(m / 2);
+        for(int i = start; i <= m; i++) {
             newKeys.add(leaf.keys.get(i));
             List<String> newBucket = leaf.values.get(i);
             newValues.add(newBucket);
         }
 
         // remove the the above entries from previous node
-        for(int i = m / 2; i < m - 1; i++) {
+        for(int i = start; i <= m; i++) {
             leaf.keys.remove(leaf.keys.size()-1);
             leaf.values.remove(leaf.values.size()-1);
         }
@@ -230,4 +223,5 @@ public class BPlusTree {
         Entry<Double, Node> newChildEntry = new AbstractMap.SimpleEntry<Double, Node>(splitKey, rightNode);
         return newChildEntry;
     }
+
 }
