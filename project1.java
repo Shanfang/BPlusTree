@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.List;
+import javafx.util.Pair;
 
 public class Project1 {
 
     // get the type of operation to be executed on the B plus tree
-    private static int getOperationType(String operation) {
+    public static int getOperationType(String operation) {
         if (operation.contains("Insert")) {
             return 1;
         } else if (operation.contains("Search") && operation.contains(",")){
@@ -24,12 +25,12 @@ public class Project1 {
         }
     }
 
-    private static double parseInsertKey(String line) {
+    public static double parseInsertKey(String line) {
         String keyStr = line.substring(line.indexOf('(') + 1, line.indexOf(',')).trim();
         return Double.parseDouble(keyStr);
     }
 
-    private static String parseInsertValue(String line) {
+    public static String parseInsertValue(String line) {
         return line.substring(line.indexOf("Value") + 5, line.indexOf(')')).trim();
     }
 
@@ -72,6 +73,29 @@ public class Project1 {
         }
     }
 
+    public static void printSearch(List<String> searchRst) {
+        if (searchRst == null) {
+            System.out.println("Null");
+        } else {
+            String result = "";
+            for(String val : searchRst) {
+                result += "Value" + val + ", ";
+            }
+            result = result.trim();
+            result = result.substring(0, result.length() - 1);
+            System.out.println(result);
+        }
+    }
+    public static void printRange(List<Pair<Double, String>> list) {
+        String result = "";
+        for (Pair<Double, String> pair : list) {
+            result += "(" + pair.getKey() + ", Value" + pair.getValue() + "), ";
+        }
+        result = result.trim();
+        result = result.substring(0, result.length() - 1);
+        System.out.println(result);
+    }
+
     public static void main(String[] args) throws IOException {
         // check if the input argument is valid
         if (args.length != 0) {
@@ -107,23 +131,17 @@ public class Project1 {
                         tree.insertion(insertionKey, insertionValue);
                         break;
                     case 2: // search by key range operation
-                        //double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
-                        //double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
-                        System.out.println("search by range");
+                        double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
+                        double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
+                        System.out.println("search by range " + low + "--" + high);
 
-                        //searchRange(low, high);
+                        List<Pair<Double, String>> rangeRst = tree.searchRange(low, high);
+                        printRange(rangeRst);
                         break;
                     case 3: // search by key operation
-                        double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
-                        System.out.println("search by key:" + searchingKey);
-                        List<String> result = tree.search(searchingKey);
-                        if (result == null) {
-                            System.out.println("Null");
-                        } else {
-                            for(String val : result) {
-                                System.out.println(val);
-                            }
-                        }
+                        double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());                        
+                        List<String> searchRst = tree.search(searchingKey);
+                        printSearch(searchRst);
                         break;
                 }
             } while (input.ready());

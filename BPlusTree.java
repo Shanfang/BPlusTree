@@ -2,7 +2,7 @@ import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.util.Pair;
 /*
     As specified in the project description, we can assume the key is of double type, and value of String type.
     Order of this B plus tree is specified from input file.
@@ -159,7 +159,7 @@ public class BPlusTree {
     }
 
     // split a leaf node and return an entry consisting of splitting key and new leaf node
-    public Entry<Double, Node> splitLeafNode(LeafNode leaf) {
+    private Entry<Double, Node> splitLeafNode(LeafNode leaf) {
         ArrayList<Double> newKeys = new ArrayList<>();
         List<List<String>> newValues = new ArrayList<>();
 
@@ -199,7 +199,7 @@ public class BPlusTree {
     }
 
     // split index node
-    public Entry<Double, Node> splitIndexNode(IndexNode node) {
+    private Entry<Double, Node> splitIndexNode(IndexNode node) {
         ArrayList<Double> newKeys = new ArrayList<>();
         ArrayList<Node> newChildren = new ArrayList<>();
 
@@ -264,5 +264,34 @@ public class BPlusTree {
                 return indexNode.children.get(i);
             }
         }
+    }
+
+    public List<Pair<Double, String>> searchRange(Double low, Double high) {
+        if(low == null || high == null || root == null) {
+            return null;
+        }
+        if (low > high) {
+            return null;
+        }
+        // find the leaf node that key is pointing to 
+        LeafNode leaf = (LeafNode)searchHelper(root, low);
+
+        // then use the sibling pointer to find all key-value paris
+        List<Pair<Double, String>> result = new ArrayList<>();
+        
+        while (leaf.nextSibling != null && leaf.nextSibling.keys.get(0) <= high) {
+            for(int i=0; i<leaf.keys.size(); i++) {
+                if(low.compareTo(leaf.keys.get(i)) <= 0) {
+                    Double key = leaf.keys.get(i);
+                    List<String> valueList = leaf.values.get(i);
+                    for (String val : valueList) {
+                        Pair<Double, String> pair = new Pair<>(key, val);
+                        result.add(pair);
+                    }
+                }
+            }
+            leaf = leaf.nextSibling;
+        }
+        return result;
     }
 }
