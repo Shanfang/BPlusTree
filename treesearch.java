@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javafx.util.Pair;
 
-public class Project1 {
+public class treesearch {
 
     // initialize the B+ tree with input order
     public static BPlusTree initTree(int order) {
@@ -109,12 +109,10 @@ public class Project1 {
 
     public static void main(String[] args) throws IOException {
         // check if the input argument is valid
-        if (args.length != 0) {
+        if (args.length != 1) {
             System.err.println("Invalid input, please enter:java treesearch file_name");
         } else {
-            // get the input file name
-            Scanner scanner = new Scanner(System.in);
-            String inputFile = scanner.nextLine();
+            String inputFile = args[0];
             System.out.println("Start reading from:" + inputFile);
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             try {
@@ -158,7 +156,7 @@ public class Project1 {
             } while (input.ready());
             //printTree(tree.treeRoot());
             System.out.println("Finished query and will close output file");
-            scanner.close();
+            //scanner.close();
             outputFile.close();
         }
     }
