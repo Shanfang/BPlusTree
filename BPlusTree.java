@@ -225,7 +225,7 @@ public class BPlusTree {
     search a key and return the corresponding value
     if the key does not exist, return null
     */
-    public List<String> search(Double key) {       
+    public List<String> search(Double key) {
         // return null if tree is empty or the given key does not exist
         if(key == null || root == null) {
             return null;
@@ -241,7 +241,7 @@ public class BPlusTree {
         }
         return null;
     }
-        
+
     private Node searchHelper(Node node, Double key) {
         if(node.isLeafNode) {
             return node;
@@ -250,7 +250,7 @@ public class BPlusTree {
             if (key.compareTo(indexNode.keys.get(0)) < 0) {
                 // inserting key is the smallest
                 return indexNode.children.get(0);
-            } else if (key.compareTo(indexNode.keys.get(indexNode.keys.size() - 1)) > 0) {
+            } else if (key.compareTo(indexNode.keys.get(indexNode.keys.size() - 1)) >= 0) {
                 // inserting key is greater than or equal to the largest key
                 return indexNode.children.get(indexNode.children.size() - 1);
             } else {
@@ -273,15 +273,18 @@ public class BPlusTree {
         if (low > high) {
             return null;
         }
-        // find the leaf node that key is pointing to 
+        // find the leaf node that key is pointing to
         LeafNode leaf = (LeafNode)searchHelper(root, low);
-
+        if (leaf == null) {
+            return null;
+        }
         // then use the sibling pointer to find all key-value paris
         List<Pair<Double, String>> result = new ArrayList<>();
-        
-        while (leaf.nextSibling != null && leaf.nextSibling.keys.get(0) <= high) {
+
+        do {
             for(int i=0; i<leaf.keys.size(); i++) {
-                if(low.compareTo(leaf.keys.get(i)) <= 0) {
+                Double cmpKey = leaf.keys.get(i);
+                if(low.compareTo(cmpKey) <= 0 && high.compareTo(cmpKey) >= 0) {
                     Double key = leaf.keys.get(i);
                     List<String> valueList = leaf.values.get(i);
                     for (String val : valueList) {
@@ -291,7 +294,7 @@ public class BPlusTree {
                 }
             }
             leaf = leaf.nextSibling;
-        }
+        } while (leaf != null && leaf.keys.get(0) <= high);
         return result;
     }
 }
