@@ -18,8 +18,6 @@ public class BPlusTree {
 
     public BPlusTree(int order) {
         this.m = order;
-
-        // initial type of B+ tree is a leaf node
         this.root = null;
     }
 
@@ -30,25 +28,6 @@ public class BPlusTree {
     public Node treeRoot() {
         return root;
     }
-
-
-   // initialize tree with the order from input file
-   private static BPlusTree InitializeTree(BufferedReader input) {
-       BPlusTree tree;
-       try {
-           int order = Integer.parseInt(input.readLine().trim());
-           //System.out.println("Order of the tree is " + order);
-           tree = new BPlusTree(order);
-           //System.out.println("B+ tree is initialized");
-       } catch (Exception e) {
-           System.err.println("The specified tree order is invalid, use default value 3");
-           tree = new BPlusTree(3);
-       }
-       return tree;
-   }
-
-
-
 
     /*
       insert a key-value pair into the BPlusTree

@@ -14,6 +14,17 @@ import javafx.util.Pair;
 
 public class Project1 {
 
+    // initialize the B+ tree with input order
+    public static BPlusTree initTree(int order) {
+        BPlusTree tree = null;
+        if (order >= 4) {
+            tree = new BPlusTree(order);
+        } else {
+            System.err.println("The specified tree order is invalid, use default order 4");
+            tree = new BPlusTree(4);
+        }
+        return tree;
+    }
     // get the type of operation to be executed on the B plus tree
     public static int getOperationType(String operation) {
         if (operation.contains("Insert")) {
@@ -113,10 +124,10 @@ public class Project1 {
                 System.err.println("The specified input file is not found");
             }
 
-            // get the order of the B plus tree
+            // get the order of the B plus tree and use it to initialize tree
             int order = Integer.parseInt(input.readLine().trim());
-
-            BPlusTree tree = new BPlusTree(order);
+            //BPlusTree tree = new BPlusTree(order);
+            BPlusTree tree = initTree(order);
 
             // execute the operations from input file and
             BufferedWriter outputFile = new BufferedWriter(new FileWriter(new File("out_put.txt")));
