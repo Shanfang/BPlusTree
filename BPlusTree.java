@@ -221,33 +221,32 @@ public class BPlusTree {
         return newChildEntry;
     }
 
-        /*
-        search a key and return the corresponding value
-        if the key does not exist, return null
-        */
-        public List<String> search(Double key) {       
-            // return null if tree is empty or the given key does not exist
-            if(key == null || root == null) {
-                return null;
-            }
-            // find the leaf node that key is pointing to
-            LeafNode leaf = (LeafNode)searchHelper(root, key);
-
-            //  iterate keys of the leaf to find the correct bucket
-            for(int i=0; i<leaf.keys.size(); i++) {
-                if(key.compareTo(leaf.keys.get(i)) == 0) {
-                    return leaf.values.get(i);
-                }
-            }
+    /*
+    search a key and return the corresponding value
+    if the key does not exist, return null
+    */
+    public List<String> search(Double key) {       
+        // return null if tree is empty or the given key does not exist
+        if(key == null || root == null) {
             return null;
         }
-            
-        private Node searchHelper(Node node, Double key) {
-            if(node.isLeafNode) {
-                return node;
-            } else {
-                IndexNode indexNode = (IndexNode)node;
+        // find the leaf node that key is pointing to
+        LeafNode leaf = (LeafNode)searchHelper(root, key);
 
+        //  iterate keys of the leaf to find the correct bucket
+        for(int i=0; i<leaf.keys.size(); i++) {
+            if(key.compareTo(leaf.keys.get(i)) == 0) {
+                return leaf.values.get(i);
+            }
+        }
+        return null;
+    }
+        
+    private Node searchHelper(Node node, Double key) {
+        if(node.isLeafNode) {
+            return node;
+        } else {
+            IndexNode indexNode = (IndexNode)node;
             if (key.compareTo(indexNode.keys.get(0)) < 0) {
                 // inserting key is the smallest
                 return indexNode.children.get(0);

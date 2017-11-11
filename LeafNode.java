@@ -25,7 +25,6 @@ public class LeafNode extends Node {
         isLeafNode = true;
         keys = new ArrayList<Double>(newKeys);
         values = new ArrayList<>(newValues);
-        // DO REMEMBER TO CREATE A LIST for bucket, otherwise null pointer issue in insertSorted
     }
 
     /*
@@ -50,16 +49,7 @@ public class LeafNode extends Node {
                 int position = iterator.previousIndex();
                 // insert into an existing key, append value to existing bucket
                 if (compKey.compareTo(key) == 0) {
-                    // System.out.println("Before adding new value, values under key: " + key);
-                    // for (String str : values.get(position)) {
-                    //     System.out.println(str);
-                    // }
                     values.get(position).add(value);
-
-                    // System.out.println("After adding new value, values under key: " + key);
-                    // for (String str : values.get(position)) {
-                    //     System.out.println(str);
-                    // }
                     break;
                 }
                 // insert new key and new bucket
