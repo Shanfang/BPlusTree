@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Project1 {
 
@@ -92,13 +93,13 @@ public class Project1 {
             int order = Integer.parseInt(input.readLine().trim());
 
             BPlusTree tree = new BPlusTree(order);
-            printTree(tree.treeRoot());
 
             // execute the operations from input file and
             BufferedWriter outputFile = new BufferedWriter(new FileWriter(new File("out_put.txt")));
 
             do {
                 String newLine = input.readLine().trim();
+                System.out.println("operations performed: " + newLine);                                
                 switch(getOperationType(newLine)) {
                     case 1: // insert operation
                         double insertionKey = parseInsertKey(newLine);
@@ -113,15 +114,20 @@ public class Project1 {
                         //searchRange(low, high);
                         break;
                     case 3: // search by key operation
-                        //double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
-                        System.out.println("search by key");
-
-                        //searchValue(searchingKey);
+                        double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());
+                        System.out.println("search by key:" + searchingKey);
+                        List<String> result = tree.search(searchingKey);
+                        if (result == null) {
+                            System.out.println("Null");
+                        } else {
+                            for(String val : result) {
+                                System.out.println(val);
+                            }
+                        }
                         break;
                 }
-                System.out.println("operations performed: " + newLine);
             } while (input.ready());
-            printTree(tree.treeRoot());
+            //printTree(tree.treeRoot());
             System.out.println("Finished query and will close output file");
             scanner.close();
             outputFile.close();

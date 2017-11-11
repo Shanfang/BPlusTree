@@ -67,7 +67,6 @@ public class BPlusTree {
         }
 
         // initially newChildEntry is null, and stays as null on return unless child is split
-        //Entry<Double, Node> newChildEntry = insertionHelper(root, entry, null);
         Entry<Double, Node> newChildEntry = insertionHelper(root, entry);
 
         // insertion does not split leaf node
@@ -82,8 +81,6 @@ public class BPlusTree {
     }
 
     private Entry<Double, Node> insertionHelper(Node node, Entry<Double, Node> entry) {
-//    private static Entry<Double, Node> insertionHelper(Node node, Entry<Double, Node> entry,
-//            Entry<Double, Node> newChildEntry) {
         Entry<Double, Node> newChildEntry = null;
         if(!node.isLeafNode) {
             IndexNode curr = (IndexNode) node;
@@ -128,7 +125,7 @@ public class BPlusTree {
                         IndexNode newRoot = new IndexNode(newChildEntry.getKey(), curr,
                                 newChildEntry.getValue());
                         root = newRoot;
-                        System.out.println("Root is index node, it is splited, tree height increase by 1");
+                        //System.out.println("Root is index node, it is splited, tree height increase by 1");
                         return null;
                     }
                     return newChildEntry;
@@ -146,14 +143,14 @@ public class BPlusTree {
             }
             else {
                 // leaf is overflow after insertion
-                System.out.println("After insertion, size of leaf node is:" + leaf.keys.size());
+                //System.out.println("After insertion, size of leaf node is:" + leaf.keys.size());
                 newChildEntry = splitLeafNode(leaf);
                 if(leaf == root) {
                     //System.out.println("New index node with key " + newChildEntry.getKey());
                     //System.out.println("New index node with value " + ((LeafNode)newChildEntry.getValue()).values.get(0).get(0));
                     IndexNode newRoot = new IndexNode(newChildEntry.getKey(), leaf,newChildEntry.getValue());
                     root = newRoot;
-                    System.out.println("Root is also leaf, it is splitted new root with key: " + root.keys.get(0));
+                    //System.out.println("Root is also leaf, it is splitted new root with key: " + root.keys.get(0));
                     return null;
                 }
                 return newChildEntry;
@@ -224,4 +221,49 @@ public class BPlusTree {
         return newChildEntry;
     }
 
+        /*
+        search a key and return the corresponding value
+        if the key does not exist, return null
+        */
+        public List<String> search(Double key) {       
+            // return null if tree is empty or the given key does not exist
+            if(key == null || root == null) {
+                return null;
+            }
+            // find the leaf node that key is pointing to
+            LeafNode leaf = (LeafNode)searchHelper(root, key);
+
+            //  iterate keys of the leaf to find the correct bucket
+            for(int i=0; i<leaf.keys.size(); i++) {
+                if(key.compareTo(leaf.keys.get(i)) == 0) {
+                    return leaf.values.get(i);
+                }
+            }
+            return null;
+        }
+            
+        private Node searchHelper(Node node, Double key) {
+            if(node.isLeafNode) {
+                return node;
+            } else {
+                IndexNode indexNode = (IndexNode)node;
+
+            if (key.compareTo(indexNode.keys.get(0)) < 0) {
+                // inserting key is the smallest
+                return indexNode.children.get(0);
+            } else if (key.compareTo(indexNode.keys.get(indexNode.keys.size() - 1)) > 0) {
+                // inserting key is greater than or equal to the largest key
+                return indexNode.children.get(indexNode.children.size() - 1);
+            } else {
+                int i = 0;
+                while (i < indexNode.keys.size()) {
+                    if (key < indexNode.keys.get(i)) {
+                        break;
+                    }
+                    i++;
+                }
+                return indexNode.children.get(i);
+            }
+        }
+    }
 }
