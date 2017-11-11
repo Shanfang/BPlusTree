@@ -1,0 +1,3 @@
+Value1, Value67
+(-3.91,Value54609), (0.02,Value98), (3.55,Value1), (3.55,Value67), (4.01,Value10)
+Null

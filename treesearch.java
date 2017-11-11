@@ -84,27 +84,43 @@ public class treesearch {
         }
     }
 
-    public static void printSearch(List<String> searchRst) {
-        if (searchRst == null) {
-            System.out.println("Null");
-        } else {
-            String result = "";
-            for(String val : searchRst) {
-                result += "Value" + val + ", ";
+    public static void printSearch(List<String> searchRst, BufferedWriter output) {
+        try {
+            if (searchRst == null) {
+                System.out.println("Null");
+                output.write("Null");
+            } else {
+                String result = "";
+                for(String val : searchRst) {
+                    result += "Value" + val + ", ";
+                }
+                result = result.trim();
+                result = result.substring(0, result.length() - 1);
+                System.out.println(result);
+                output.write(result);
+                output.newLine();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.err.println("Writing to output file error");
+        } 
+    }
+
+    public static void printRange(List<Pair<Double, String>> list, BufferedWriter output) {
+        String result = "";
+            try {
+            for (Pair<Double, String> pair : list) {
+                result += "(" + pair.getKey() + ",Value" + pair.getValue() + "), ";
             }
             result = result.trim();
             result = result.substring(0, result.length() - 1);
             System.out.println(result);
+            output.write(result);
+            output.newLine();
+        } catch (IOException ex){
+            ex.printStackTrace();
+            System.err.println("Writing to output file error");            
         }
-    }
-    public static void printRange(List<Pair<Double, String>> list) {
-        String result = "";
-        for (Pair<Double, String> pair : list) {
-            result += "(" + pair.getKey() + ", Value" + pair.getValue() + "), ";
-        }
-        result = result.trim();
-        result = result.substring(0, result.length() - 1);
-        System.out.println(result);
     }
 
     public static void main(String[] args) throws IOException {
@@ -113,13 +129,13 @@ public class treesearch {
             System.err.println("Invalid input, please enter:java treesearch file_name");
         } else {
             String inputFile = args[0];
-            System.out.println("Start reading from:" + inputFile);
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
             try {
                 input = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile + ".txt")));
 
             } catch (FileNotFoundException e) {
-                System.err.println("The specified input file is not found");
+                System.err.println("The specified input file is not found, exiting now...");
+                System.exit(-1);
             }
 
             // get the order of the B plus tree and use it to initialize tree
@@ -132,7 +148,6 @@ public class treesearch {
 
             do {
                 String newLine = input.readLine().trim();
-                System.out.println("operations performed: " + newLine);                                
                 switch(getOperationType(newLine)) {
                     case 1: // insert operation
                         double insertionKey = parseInsertKey(newLine);
@@ -142,21 +157,16 @@ public class treesearch {
                     case 2: // search by key range operation
                         double low = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(',')).trim());
                         double high = Double.parseDouble(newLine.substring(newLine.indexOf(',') + 1, newLine.indexOf(')')).trim());
-                        System.out.println("search by range " + low + "--" + high);
-
                         List<Pair<Double, String>> rangeRst = tree.searchRange(low, high);
-                        printRange(rangeRst);
+                        printRange(rangeRst, outputFile);
                         break;
                     case 3: // search by key operation
                         double searchingKey = Double.parseDouble(newLine.substring(newLine.indexOf('(') + 1, newLine.indexOf(')')).trim());                        
                         List<String> searchRst = tree.search(searchingKey);
-                        printSearch(searchRst);
+                        printSearch(searchRst, outputFile);
                         break;
                 }
             } while (input.ready());
-            //printTree(tree.treeRoot());
-            System.out.println("Finished query and will close output file");
-            //scanner.close();
             outputFile.close();
         }
     }
