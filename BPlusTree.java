@@ -1,5 +1,4 @@
 import java.util.AbstractMap;
-import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.util.Pair;
@@ -33,20 +32,20 @@ public class BPlusTree {
     }
 
 
-//    // initialize tree with the order from input file
-//    private static BPlusTree InitializeTree(BufferedReader input) {
-//        BPlusTree tree;
-//        try {
-//            int order = Integer.parseInt(input.readLine().trim());
-//            //System.out.println("Order of the tree is " + order);
-//            tree = new BPlusTree(order);
-//            //System.out.println("B+ tree is initialized");
-//        } catch (Exception e) {
-//            System.err.println("The specified tree order is invalid, use default value 3");
-//            tree = new BPlusTree(3);
-//        }
-//        return tree;
-//    }
+   // initialize tree with the order from input file
+   private static BPlusTree InitializeTree(BufferedReader input) {
+       BPlusTree tree;
+       try {
+           int order = Integer.parseInt(input.readLine().trim());
+           //System.out.println("Order of the tree is " + order);
+           tree = new BPlusTree(order);
+           //System.out.println("B+ tree is initialized");
+       } catch (Exception e) {
+           System.err.println("The specified tree order is invalid, use default value 3");
+           tree = new BPlusTree(3);
+       }
+       return tree;
+   }
 
 
 
@@ -58,84 +57,84 @@ public class BPlusTree {
      */
     public void insertion(Double key, String value) {
         LeafNode newLeaf = new LeafNode(key, value);
-        Entry<Double, Node> entry = new AbstractMap.SimpleEntry<Double, Node>(key, newLeaf);
-
+        Pair<Double, Node> pair = new Pair<Double, Node>(key, newLeaf);
+        
         // insert into an empty tree, this leaf node becomes a new root
         if(root == null || root.keys.size() == 0) {
-            root = entry.getValue();
+            root = pair.getValue();
             return;
         }
 
-        // initially newChildEntry is null, and stays as null on return unless child is split
-        Entry<Double, Node> newChildEntry = insertionHelper(root, entry);
+        // initially newChildPair is null, and stays as null on return unless child is split
+        Pair<Double, Node> newChildPair = insertionHelper(root, pair);
 
         // insertion does not split leaf node
-        if(newChildEntry == null) {
+        if(newChildPair == null) {
             return;
         } else {
             // splitting take place
-            IndexNode newRoot = new IndexNode(newChildEntry.getKey(), root, newChildEntry.getValue());
+            IndexNode newRoot = new IndexNode(newChildPair.getKey(), root, newChildPair.getValue());
             root = newRoot;
             return;
         }
     }
 
-    private Entry<Double, Node> insertionHelper(Node node, Entry<Double, Node> entry) {
-        Entry<Double, Node> newChildEntry = null;
+    private Pair<Double, Node> insertionHelper(Node node, Pair<Double, Node> pair) {
+        Pair<Double, Node> newChildPair = null;
         if(!node.isLeafNode) {
             IndexNode curr = (IndexNode) node;
             int i = 0;
 
-            // iterate node's keys to find i such that ith of keys <= entry's key value < (i+1)th of keys
+            // iterate node's keys to find i such that ith of keys <= pair's key value < (i+1)th of keys
             while(i < curr.keys.size()) {
-                if(entry.getKey().compareTo(curr.keys.get(i)) < 0) {
+                if(pair.getKey().compareTo(curr.keys.get(i)) < 0) {
                     break;
                 }
                 i++;
             }
 
-            // recursively call the helper method until it hits a leaf node, then insert entry
-            newChildEntry = insertionHelper((Node)curr.children.get(i), entry);
+            // recursively call the helper method until it hits a leaf node, then insert pair
+            newChildPair = insertionHelper((Node)curr.children.get(i), pair);
 
             // the case that insertion does not split node
-            if(newChildEntry == null) {
+            if(newChildPair == null) {
                 return null;
             } else {
-                // the case that child node splits, need to insert newChildEntry in node
+                // the case that child node splits, need to insert newChildPair in node
                 int j = 0;
                 while (j < curr.keys.size()) {
-                    if(newChildEntry.getKey().compareTo(curr.keys.get(j)) < 0) {
+                    if(newChildPair.getKey().compareTo(curr.keys.get(j)) < 0) {
                         break;
                     }
                     j++;
                 }
-                curr.insertSorted(newChildEntry, j);
+                curr.insertSorted(newChildPair, j);
 
-                // after insertion the newChildEntry, need to check overflow status
+                // after insertion the newChildPair, need to check overflow status
                 if(curr.keys.size() < m) {
                     // no overflow, return to the caller for this recursion
                     return null;
                 }
                 else{
-                    newChildEntry = splitIndexNode(curr);
+                    newChildPair = splitIndexNode(curr);
 
-                    // root was split, use newChildEntry to create a new root and grow the tree height by 1
+                    // root was split, use newChildPair to create a new root and grow the tree height by 1
                     if(curr == root) {
                         // Create new node and make tree's root-node pointer point to newRoot
-                        IndexNode newRoot = new IndexNode(newChildEntry.getKey(), curr,
-                                newChildEntry.getValue());
+                        IndexNode newRoot = new IndexNode(newChildPair.getKey(), curr,
+                                newChildPair.getValue());
                         root = newRoot;
                         //System.out.println("Root is index node, it is splited, tree height increase by 1");
                         return null;
                     }
-                    return newChildEntry;
+                    return newChildPair;
                 }
             }
         } else {
             LeafNode leaf = (LeafNode)node;
-            LeafNode newLeaf = (LeafNode)entry.getValue();
+            LeafNode newLeaf = (LeafNode)pair.getValue();
 
-            leaf.insertSorted(entry.getKey(), newLeaf.values.get(0).get(0));
+            leaf.insertSorted(pair.getKey(), newLeaf.values.get(0).get(0));
 
             // the case that there is extra space for newLeaf
             if(leaf.keys.size() <= m) {
@@ -144,22 +143,22 @@ public class BPlusTree {
             else {
                 // leaf is overflow after insertion
                 //System.out.println("After insertion, size of leaf node is:" + leaf.keys.size());
-                newChildEntry = splitLeafNode(leaf);
+                newChildPair = splitLeafNode(leaf);
                 if(leaf == root) {
-                    //System.out.println("New index node with key " + newChildEntry.getKey());
-                    //System.out.println("New index node with value " + ((LeafNode)newChildEntry.getValue()).values.get(0).get(0));
-                    IndexNode newRoot = new IndexNode(newChildEntry.getKey(), leaf,newChildEntry.getValue());
+                    //System.out.println("New index node with key " + newChildPair.getKey());
+                    //System.out.println("New index node with value " + ((LeafNode)newChildPair.getValue()).values.get(0).get(0));
+                    IndexNode newRoot = new IndexNode(newChildPair.getKey(), leaf,newChildPair.getValue());
                     root = newRoot;
                     //System.out.println("Root is also leaf, it is splitted new root with key: " + root.keys.get(0));
                     return null;
                 }
-                return newChildEntry;
+                return newChildPair;
             }
         }
     }
 
-    // split a leaf node and return an entry consisting of splitting key and new leaf node
-    private Entry<Double, Node> splitLeafNode(LeafNode leaf) {
+    // split a leaf node and return an pair consisting of splitting key and new leaf node
+    private Pair<Double, Node> splitLeafNode(LeafNode leaf) {
         ArrayList<Double> newKeys = new ArrayList<>();
         List<List<String>> newValues = new ArrayList<>();
 
@@ -194,12 +193,12 @@ public class BPlusTree {
             rightNode.preSibling = leaf;
         }
 
-        Entry<Double, Node> newChildEntry = new AbstractMap.SimpleEntry<Double, Node>(splitKey, rightNode);
-        return newChildEntry;
+        Pair<Double, Node> newChildPair = new Pair<Double, Node>(splitKey, rightNode);
+        return newChildPair;
     }
 
     // split index node
-    private Entry<Double, Node> splitIndexNode(IndexNode node) {
+    private Pair<Double, Node> splitIndexNode(IndexNode node) {
         ArrayList<Double> newKeys = new ArrayList<>();
         ArrayList<Node> newChildren = new ArrayList<>();
 
@@ -217,8 +216,8 @@ public class BPlusTree {
         }
 
         IndexNode rightNode = new IndexNode(newKeys, newChildren);
-        Entry<Double, Node> newChildEntry = new AbstractMap.SimpleEntry<Double, Node>(splitKey, rightNode);
-        return newChildEntry;
+        Pair<Double, Node> newChildPair = new Pair<Double, Node>(splitKey, rightNode);
+        return newChildPair;
     }
 
     /*

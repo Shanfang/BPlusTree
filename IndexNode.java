@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
+import javafx.util.Pair;
 
 public class IndexNode extends Node {
 
@@ -29,12 +29,12 @@ public class IndexNode extends Node {
 
 
     /*
-     insert the entry into this node at the specified index so that it still
+     insert the pair into this node at the specified index so that it still
      remains sorted
      */
-    public void insertSorted(Entry<Double, Node> entry, int index) {
-        Double key = entry.getKey();
-        Node child = entry.getValue();
+    public void insertSorted(Pair<Double, Node> pair, int index) {
+        Double key = pair.getKey();
+        Node child = pair.getValue();
         if (index >= keys.size()) {
             keys.add(key);
             children.add(child);
