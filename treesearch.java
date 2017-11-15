@@ -88,6 +88,7 @@ public class treesearch {
             if (searchRst == null) {
                 System.out.println("Null");
                 output.write("Null");
+                output.newLine();
             } else {
                 String result = "";
                 for(String val : searchRst) {
