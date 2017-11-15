@@ -226,22 +226,23 @@ public class BPlusTree {
             IndexNode indexNode = (IndexNode)node;
             if (key.compareTo(indexNode.keys.get(0)) < 0) {
                 // inserting key is the smallest
-                return indexNode.children.get(0);
+                return searchHelper(indexNode.children.get(0), key);
             } else if (key.compareTo(indexNode.keys.get(indexNode.keys.size() - 1)) >= 0) {
                 // inserting key is greater than or equal to the largest key
-                return indexNode.children.get(indexNode.children.size() - 1);
+                return searchHelper(indexNode.children.get(indexNode.children.size() - 1), key);
             } else {
                 int i = 0;
-                while (i < indexNode.keys.size()) {
-                    if (key < indexNode.keys.get(i)) {
+                for (i = 0; i < indexNode.keys.size() - 1; i++) {
+                    if (key.compareTo(indexNode.keys.get(i)) >= 0 && key.compareTo(indexNode.keys.get(i + 1)) < 0) {
+                        // find a potential indexNode, then recursively find in its children
                         break;
                     }
-                    i++;
                 }
-                return indexNode.children.get(i);
+                return searchHelper(indexNode.children.get(i + 1), key);
             }
         }
     }
+     
 
     public List<Pair<Double, String>> searchRange(Double low, Double high) {
         if(low == null || high == null || root == null) {
