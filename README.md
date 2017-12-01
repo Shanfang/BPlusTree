@@ -1,4 +1,4 @@
-# B-Tree
+# B Plus Tree
 This is a course project for ADS. The B+ tree is assumed to store key of double type, and value of String type.
 Order of this B plus tree is specified from input file.
 Operations on this tree includes:
