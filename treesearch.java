@@ -86,7 +86,7 @@ public class treesearch {
     public static void printSearch(List<String> searchRst, BufferedWriter output) {
         try {
             if (searchRst == null) {
-                System.out.println("Null");
+                //System.out.println("Null");
                 output.write("Null");
                 output.newLine();
             } else {
@@ -96,7 +96,7 @@ public class treesearch {
                 }
                 result = result.trim();
                 result = result.substring(0, result.length() - 1);
-                System.out.println(result);
+                //System.out.println(result);
                 output.write(result);
                 output.newLine();
             }
@@ -107,16 +107,22 @@ public class treesearch {
     }
 
     public static void printRange(List<Pair<Double, String>> list, BufferedWriter output) {
-        String result = "";
             try {
-            for (Pair<Double, String> pair : list) {
-                result += "(" + pair.getKey() + ",Value" + pair.getValue() + "), ";
-            }
-            result = result.trim();
-            result = result.substring(0, result.length() - 1);
-            System.out.println(result);
-            output.write(result);
-            output.newLine();
+                if (list == null || list.size() == 0) {
+                    output.write("Null");
+                    output.newLine();
+                } else {
+                    String result = "";
+                    for (Pair<Double, String> pair : list) {
+                        result += "(" + pair.getKey() + ",Value" + pair.getValue() + "), ";
+                    }
+                    result = result.trim();
+                    result = result.substring(0, result.length() - 1);
+                    //System.out.println(result);
+                    output.write(result);
+                    output.newLine();
+                }
+
         } catch (IOException ex){
             ex.printStackTrace();
             System.err.println("Writing to output file error");            
